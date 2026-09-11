@@ -3808,21 +3808,18 @@
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(9)" />
             <field name="min_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_11" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(10)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_12" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(11)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_13" model="pms.availability.plan.rule">
@@ -3843,84 +3840,72 @@
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(14)" />
-            <field name="quota">2</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_16" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(15)" />
-            <field name="quota">2</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_17" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(16)" />
-            <field name="quota">2</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_18" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(17)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_19" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(18)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_20" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(19)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_21" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(20)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_22" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(21)" />
-            <field name="quota">3</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_23" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(22)" />
-            <field name="quota">3</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_24" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(23)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_25" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(24)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_26" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_double" />
             <field name="date" eval="DateTime.today() + timedelta(25)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_double_27" model="pms.availability.plan.rule">
@@ -4175,7 +4160,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today()" />
             <field name="min_stay">3</field>
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_2" model="pms.availability.plan.rule">
@@ -4183,7 +4167,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(1)" />
             <field name="min_stay">2</field>
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_3" model="pms.availability.plan.rule">
@@ -4191,7 +4174,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(2)" />
             <field name="min_stay">2</field>
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_4" model="pms.availability.plan.rule">
@@ -4206,7 +4188,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(4)" />
             <field name="min_stay">2</field>
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_6" model="pms.availability.plan.rule">
@@ -4228,21 +4209,18 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(7)" />
             <field name="min_stay_arrival">2</field>
-            <field name="quota">10</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_9" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(8)" />
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_10" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(9)" />
-            <field name="quota">5</field>
             <field name="max_stay_arrival">3</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
@@ -4250,7 +4228,6 @@
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(10)" />
-            <field name="quota">5</field>
             <field name="max_stay_arrival">2</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
@@ -4258,7 +4235,6 @@
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(11)" />
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_13" model="pms.availability.plan.rule">
@@ -4266,7 +4242,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(12)" />
             <field name="min_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_14" model="pms.availability.plan.rule">
@@ -4274,17 +4249,13 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(13)" />
             <field name="min_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_15" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(17)" />
-            <field name="quota">1</field><field
-            name="pms_property_id"
-            ref="main_pms_property"
-        />
+            <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_16" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
@@ -4298,14 +4269,12 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(21)" />
             <field name="min_stay">2</field>
-            <field name="quota">3</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_18" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(22)" />
-            <field name="quota">3</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_19" model="pms.availability.plan.rule">
@@ -4313,7 +4282,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(23)" />
             <field name="max_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_20" model="pms.availability.plan.rule">
@@ -4321,7 +4289,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(24)" />
             <field name="max_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_21" model="pms.availability.plan.rule">
@@ -4329,7 +4296,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(25)" />
             <field name="max_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_22" model="pms.availability.plan.rule">
@@ -4337,7 +4303,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(26)" />
             <field name="max_stay">3</field>
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_23" model="pms.availability.plan.rule">
@@ -4345,7 +4310,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(27)" />
             <field name="max_stay">3</field>
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_29" model="pms.availability.plan.rule">
@@ -4353,7 +4317,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(28)" />
             <field name="max_stay">3</field>
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_24" model="pms.availability.plan.rule">
@@ -4361,7 +4324,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(29)" />
             <field name="min_stay">2</field>
-            <field name="quota">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_25" model="pms.availability.plan.rule">
@@ -4383,7 +4345,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(34)" />
             <field name="min_stay">2</field>
-            <field name="max_avail">4</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_28" model="pms.availability.plan.rule">
@@ -4391,7 +4352,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(35)" />
             <field name="min_stay">3</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_29" model="pms.availability.plan.rule">
@@ -4399,7 +4359,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(36)" />
             <field name="min_stay">3</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_30" model="pms.availability.plan.rule">
@@ -4407,7 +4366,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(37)" />
             <field name="min_stay">3</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_31" model="pms.availability.plan.rule">
@@ -4415,7 +4373,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(38)" />
             <field name="min_stay">3</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_32" model="pms.availability.plan.rule">
@@ -4444,7 +4401,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(42)" />
             <field name="min_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_36" model="pms.availability.plan.rule">
@@ -4452,7 +4408,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(43)" />
             <field name="min_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_37" model="pms.availability.plan.rule">
@@ -4460,7 +4415,6 @@
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(44)" />
             <field name="min_stay">2</field>
-            <field name="quota">1</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_38" model="pms.availability.plan.rule">
@@ -4511,7 +4465,6 @@
             <field name="date" eval="DateTime.today() + timedelta(52)" />
             <field name="min_stay">2</field>
             <field name="max_stay">5</field>
-            <field name="max_avail">3</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_45" model="pms.availability.plan.rule">
@@ -4520,14 +4473,12 @@
             <field name="date" eval="DateTime.today() + timedelta(54)" />
             <field name="min_stay">2</field>
             <field name="max_stay">5</field>
-            <field name="quota">10</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_46" model="pms.availability.plan.rule">
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(56)" />
-            <field name="quota">10</field>
             <field name="max_stay">5</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
@@ -4535,7 +4486,6 @@
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(57)" />
-            <field name="max_avail">3</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
         <record id="availability_rule_triple_48" model="pms.availability.plan.rule">
@@ -4556,7 +4506,6 @@
             <field name="availability_plan_id" ref="demo_pms_availability" />
             <field name="room_type_id" ref="pms_room_type_triple" />
             <field name="date" eval="DateTime.today() + timedelta(60)" />
-            <field name="max_avail">3</field>
             <field name="pms_property_id" ref="main_pms_property" />
         </record>
 </odoo>
