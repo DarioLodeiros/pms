@@ -556,33 +556,8 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         Test create and invoice from the Folio, and check the related
         amounts with board service linked
         """
-        self.product1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
-
-        self.board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service 1",
-                "default_code": "CB1",
-            }
-        )
-        self.board_service_line1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": self.product1.id,
-                "pms_board_service_id": self.board_service1.id,
-                "amount": 10,
-                "adults": True,
-            }
-        )
-
-        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service1.id,
-                "pms_property_id": self.property.id,
-            }
+        self.board_service1 = self._create_board_service(
+            "Test Board Service 1", default_code="CB1", list_price=10
         )
         self.reservation1 = self.env["pms.reservation"].create(
             {
@@ -592,7 +567,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -614,33 +589,8 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         Test create and invoice from the Folio, and check qty invoiced
         with board service linked.
         """
-        self.product1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
-
-        self.board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service 1",
-                "default_code": "CB1",
-            }
-        )
-        self.board_service_line1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": self.product1.id,
-                "pms_board_service_id": self.board_service1.id,
-                "amount": 10,
-                "adults": True,
-            }
-        )
-
-        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service1.id,
-                "pms_property_id": self.property.id,
-            }
+        self.board_service1 = self._create_board_service(
+            "Test Board Service 1", default_code="CB1", list_price=10
         )
         self.reservation1 = self.env["pms.reservation"].create(
             {
@@ -650,7 +600,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -674,33 +624,8 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         Test create and invoice from the Folio, and check qty to invoice
         with board service linked
         """
-        self.product1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
-
-        self.board_service1 = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service 1",
-                "default_code": "CB1",
-            }
-        )
-        self.board_service_line1 = self.env["pms.board.service.line"].create(
-            {
-                "product_id": self.product1.id,
-                "pms_board_service_id": self.board_service1.id,
-                "amount": 10,
-                "adults": True,
-            }
-        )
-
-        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": self.board_service1.id,
-                "pms_property_id": self.property.id,
-            }
+        self.board_service1 = self._create_board_service(
+            "Test Board Service 1", default_code="CB1", list_price=10
         )
         self.reservation1 = self.env["pms.reservation"].create(
             {
@@ -710,7 +635,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
-                "board_service_room_id": self.board_service_room_type1.id,
+                "board_service_id": self.board_service1.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )

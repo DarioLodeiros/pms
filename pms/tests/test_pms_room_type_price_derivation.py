@@ -519,7 +519,7 @@ class TestPmsRoomTypePriceDerivation(TestPms):
             room_type_id=self.superior.id,
             checkin=self.date,
             checkout=self.date + datetime.timedelta(days=2),
-            board_service_room_id=False,
+            board_service_id=False,
             pricelist_id=self.pricelist1.id,
             pms_property_id=self.pms_property1.id,
         )
