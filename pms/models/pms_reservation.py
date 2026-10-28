@@ -356,12 +356,9 @@ class PmsReservation(models.Model):
         compute="_compute_adults",
         tracking=True,
     )
-    children_occupying = fields.Integer(
-        help="Number of children there in guest list whose presence counts",
-    )
     children = fields.Integer(
-        help="Number total of children there in guest list,"
-        "whose presence counts or not",
+        help="Number of children there in guest list. They take the regular "
+        "places of the room first, and only overflow into its children places",
         readonly=False,
         tracking=True,
     )
@@ -1031,7 +1028,9 @@ class PmsReservation(models.Model):
                     else:
                         res.user_id = active_user_id or res.pms_property_id.user_id
 
-    @api.depends("pricelist_id", "room_type_id")
+    @api.depends(
+        lambda self: ["pricelist_id", "room_type_id", *self._occupancy_price_fields()]
+    )
     def _compute_show_update_pricelist(self):
         for reservation in self:
             if (
@@ -1043,6 +1042,10 @@ class PmsReservation(models.Model):
                 or (
                     reservation.room_type_id
                     and reservation._origin.room_type_id != reservation.room_type_id
+                )
+                or any(
+                    reservation._origin[field] != reservation[field]
+                    for field in reservation._occupancy_price_fields()
                 )
             ):
                 reservation.show_update_pricelist = True
@@ -2215,9 +2218,10 @@ class PmsReservation(models.Model):
 
         for record in self:
             record._check_services(vals)
-            # Only check if adult to avoid to check capacity in intermediate states
-            # (p.e. flush) that not take access to possible extra beds service in vals
-            if "adults" in vals:
+            # Only check on occupancy changes to avoid checking capacity in
+            # intermediate states (p.e. flush) that not take access to possible
+            # extra beds service in vals
+            if "adults" in vals or "children" in vals:
                 record._check_capacity()
             # The room of the lines is recomputed from the preferred room, so
             # that write does not go through pms.reservation.line.write and the
@@ -2310,6 +2314,17 @@ class PmsReservation(models.Model):
                 ):
                     services_to_update_channel += service
         return services_to_update_channel
+
+    def _occupancy_price_fields(self):
+        """Fields the price of a night is derived from, besides the pricelist
+        and the room type.
+
+        Changing them leaves the prices of the nights outdated, the same as
+        changing the pricelist or the room type does: the nights keep the price
+        they have and the reservation flags it, so that they are updated on
+        purpose. Modules pricing on more than the adults staying add their own.
+        """
+        return ["adults"]
 
     def update_prices(self):
         self.ensure_one()
