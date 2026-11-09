@@ -5,6 +5,7 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_round
 
 
 class PmsRoomType(models.Model):
@@ -18,6 +19,9 @@ class PmsRoomType(models.Model):
     _inherits = {"product.product": "product_id"}
     _order = "sequence,default_code,name"
     _check_pms_properties_auto = True
+    # Room types a price can be derived through, from the priced one up to the
+    # root of its chain
+    _price_derivation_max_depth = 10
 
     sequence = fields.Integer(
         help="Field used to change the position of the room types in tree view.",
@@ -73,6 +77,22 @@ class PmsRoomType(models.Model):
         compute="_compute_total_rooms_count",
         store=True,
     )
+    max_occupancy = fields.Integer(
+        string="Max. Occupancy",
+        help="Occupancy the room type guarantees: the smallest capacity among "
+        "its rooms, as any of them can be the one assigned. Zero when the "
+        "room type has no rooms yet",
+        compute="_compute_max_occupancy",
+        store=True,
+    )
+    default_occupancy = fields.Integer(
+        help="Occupancy the price of this room type is given for. Prices for "
+        "a different number of adults are derived from it. Zero to price the "
+        "room type regardless of its occupancy",
+        compute="_compute_default_occupancy",
+        store=True,
+        readonly=False,
+    )
     default_max_avail = fields.Integer(
         string="Default Max. Availability",
         help="Maximum simultaneous availability on own Booking Engine "
@@ -93,6 +113,53 @@ class PmsRoomType(models.Model):
         string="Min. Price",
         help="Minimum price for a room type",
         default=5.0,
+    )
+    price_base_room_type_id = fields.Many2one(
+        string="Price Derived From",
+        help="Room type whose price is the base of this one in the pricelists "
+        "without a rule of their own for it",
+        comodel_name="pms.room.type",
+        ondelete="restrict",
+        index=True,
+        check_pms_properties=True,
+    )
+    price_derived_room_type_ids = fields.One2many(
+        string="Derived Room Types",
+        help="Room types whose price is derived from this one",
+        comodel_name="pms.room.type",
+        inverse_name="price_base_room_type_id",
+        check_pms_properties=True,
+    )
+    price_derivation_type = fields.Selection(
+        string="Price Variation Type",
+        help="Whether the variation is a fixed amount or a percentage of the "
+        "price of the base room type",
+        selection=[("amount", "Fixed amount"), ("percent", "Percentage")],
+        default="amount",
+        required=True,
+    )
+    price_derivation_value = fields.Float(
+        string="Price Variation",
+        help="Added to the price of the base room type, as an amount in the "
+        "currency of the pricelist or as a percentage of that price. Negative "
+        "values lower it",
+        digits="Product Price",
+    )
+    price_derivation_rounding = fields.Float(
+        string="Price Rounding",
+        help="Round the prices derived by a percentage to a multiple of this "
+        "value, e.g. 1 for whole amounts. Zero rounds them to the currency",
+        digits="Product Price",
+    )
+    price_derivation_pricelist_ids = fields.Many2many(
+        string="Derive in Pricelists",
+        help="Pricelists where the price is derived. Leave it empty to derive "
+        "it in all of them",
+        comodel_name="product.pricelist",
+        relation="pms_room_type_price_derivation_pricelist_rel",
+        column1="room_type_id",
+        column2="pricelist_id",
+        check_pms_properties=True,
     )
 
     def name_get(self):
@@ -118,6 +185,52 @@ class PmsRoomType(models.Model):
     def _compute_total_rooms_count(self):
         for record in self:
             record.total_rooms_count = len(record.room_ids)
+
+    @api.depends("room_ids", "room_ids.active", "room_ids.capacity")
+    def _compute_max_occupancy(self):
+        """The smallest capacity among the rooms of the type.
+
+        The smallest and not the largest one: any room of the type can be the
+        one assigned, so a larger capacity is not guaranteed and selling it
+        would end up in an overbooking.
+        """
+        for record in self:
+            capacities = record.room_ids.mapped("capacity")
+            record.max_occupancy = min(capacities) if capacities else 0
+
+    @api.depends("max_occupancy")
+    def _compute_default_occupancy(self):
+        """Keep the occupancy the price is given for within reach of the rooms.
+
+        It defaults to the maximum occupancy and follows it down when a smaller
+        room joins the type, as otherwise adding that room would be refused. A
+        room type priced for fewer guests than it holds keeps its own value.
+        """
+        for record in self:
+            default_occupancy = record.default_occupancy or record.max_occupancy
+            if record.max_occupancy:
+                default_occupancy = min(default_occupancy, record.max_occupancy)
+            record.default_occupancy = default_occupancy
+
+    @api.constrains("default_occupancy")
+    def _check_default_occupancy(self):
+        """A room type cannot be priced for more guests than it guarantees.
+
+        Only on the value itself, never on max_occupancy: a smaller room
+        joining the type brings the default down (see
+        _compute_default_occupancy) and adding that room must not be refused.
+        Room types with no rooms are left alone, as they come before them.
+        """
+        for record in self:
+            if record.max_occupancy and record.default_occupancy > record.max_occupancy:
+                raise ValidationError(
+                    _(
+                        "The default occupancy of %(room_type)s can't be "
+                        "higher than the occupancy it guarantees (%(max)s)",
+                        room_type=record.display_name,
+                        max=record.max_occupancy,
+                    )
+                )
 
     @api.model
     def get_room_types_by_property(self, pms_property_id, default_code=None):
@@ -186,6 +299,51 @@ class PmsRoomType(models.Model):
                     if other and other != rec:
                         raise ValidationError(msg)
 
+    @api.constrains("price_base_room_type_id")
+    def _check_price_base_room_type_id(self):
+        """A price cannot be derived in a loop, nor through endless chains.
+
+        Prices are derived on the fly, level by level, so a loop would never
+        end and the engine refuses to follow chains longer than
+        ``_price_derivation_max_depth``: refuse both when they are set up
+        rather than when selling.
+        """
+        if not self._check_recursion(parent="price_base_room_type_id"):
+            raise ValidationError(
+                _(
+                    "A room type cannot derive its price from itself, directly "
+                    "or through other room types."
+                )
+            )
+        # All of them, also the archived ones and the ones out of the access
+        # of the current user
+        room_types = self.sudo().with_context(active_test=False)
+        for room_type in room_types | room_types._get_price_derivation_descendants():
+            depth = room_type._get_price_derivation_depth()
+            if depth > self._price_derivation_max_depth:
+                raise ValidationError(
+                    _(
+                        "The price of %(room_type)s is derived through too many "
+                        "levels.",
+                        room_type=room_type.display_name,
+                    )
+                )
+
+    @api.constrains(
+        "price_derivation_type", "price_derivation_value", "price_derivation_rounding"
+    )
+    def _check_price_derivation_values(self):
+        for room_type in self:
+            if (
+                room_type.price_derivation_type == "percent"
+                and room_type.price_derivation_value <= -100
+            ):
+                raise ValidationError(
+                    _("A percentage variation must be greater than -100%.")
+                )
+            if room_type.price_derivation_rounding < 0:
+                raise ValidationError(_("The price rounding can't be negative."))
+
     # ORM Overrides
     # TODO: Review Check product fields default values to room
     @api.model_create_multi
@@ -216,6 +374,38 @@ class PmsRoomType(models.Model):
         ).mapped("capacity")
         return min(capacities) if any(capacities) else 0
 
+    def _get_occupancy_rule(self, pricelist):
+        """The occupancy modifiers this pricelist holds for the room type."""
+        self.ensure_one()
+        if not pricelist:
+            return self.env["pms.pricelist.occupancy"]
+        return self.env["pms.pricelist.occupancy"].search(
+            [
+                ("pricelist_id", "=", pricelist.id),
+                ("room_type_id", "=", self.id),
+            ],
+            limit=1,
+        )
+
+    def _get_occupancy_price(self, price, occupancy, pricelist):
+        """Derive the price of the room type for a given number of adults.
+
+        The price of a pricelist is the one for the default occupancy of the
+        room type, and the configured modifiers derive the rest from it. Room
+        types with no default occupancy, or pricelists with no modifiers for
+        them, are priced the same no matter how many guests stay.
+        """
+        self.ensure_one()
+        if not occupancy or not self.default_occupancy:
+            return price
+        difference = occupancy - self.default_occupancy
+        if not difference:
+            return price
+        occupancy_rule = self._get_occupancy_rule(pricelist)
+        if not occupancy_rule:
+            return price
+        return max(occupancy_rule._apply(price, difference), 0)
+
     @api.model
     def get_default_board_service(self, pms_property_id, room_type_id, pricelist_id):
         board_services_candidates = self.env["pms.board.service.room.type"].search(
@@ -235,3 +425,78 @@ class PmsRoomType(models.Model):
             or False
         )
         return board_service_default
+
+    def _get_price_derivation(self, pricelist):
+        """The room types of self whose price is derived in the pricelist.
+
+        A room type derives its price from its base room type in the
+        pricelists it is set to derive in, or in all of them when none is set.
+        This is only where the derivation applies: the engine still uses a
+        rule of the pricelist covering the room type whenever there is one.
+        Callers only rely on the result being empty or not, so the variation
+        can come from elsewhere (e.g. a rule per pricelist) in the future.
+        It is the same whoever asks: the configuration is read as stored.
+        """
+        if not pricelist:
+            return self.browse()
+        # Read as stored: neither the access of the current user to the
+        # pricelists nor archiving them may empty a restriction, which would
+        # make the room type derive in all the pricelists
+        stored = self.sudo().with_context(active_test=False)
+        return self & stored.filtered(
+            lambda room_type: room_type.price_base_room_type_id
+            and (
+                not room_type.price_derivation_pricelist_ids
+                or pricelist.id in room_type.price_derivation_pricelist_ids.ids
+            )
+        )
+
+    def _derive_price(self, base_price, currency=None):
+        """Apply the price variation of the room type to the price of its base.
+
+        The variation is an amount, in the currency of the pricelist, or a
+        percentage of the base price. Prices derived by a percentage are
+        rounded to the multiple set on the room type, if any, and the result
+        to the currency. It never goes below zero.
+        """
+        self.ensure_one()
+        if self.price_derivation_type == "percent":
+            price = base_price * (1 + self.price_derivation_value / 100)
+            if self.price_derivation_rounding:
+                price = float_round(
+                    price, precision_rounding=self.price_derivation_rounding
+                )
+        else:
+            price = base_price + self.price_derivation_value
+        if currency:
+            price = currency.round(price)
+        return max(price, 0.0)
+
+    def _get_price_derivation_descendants(self):
+        """The room types deriving their price from self, at any level.
+
+        Breadth first, so every room type comes after the one its price is
+        derived from. The room types of self are not part of the result.
+        """
+        descendants = self.browse()
+        derived = self.price_derived_room_type_ids
+        while derived:
+            # Guard against loops written bypassing the constraints
+            derived -= self | descendants
+            descendants |= derived
+            derived = derived.price_derived_room_type_ids
+        return descendants
+
+    def _get_price_derivation_depth(self):
+        """How many room types the price goes through up to the root one.
+
+        Counting stops past ``_price_derivation_max_depth``, which is all
+        callers need to know and keeps it finite on loops.
+        """
+        self.ensure_one()
+        depth = 0
+        base_room_type = self.price_base_room_type_id
+        while base_room_type and depth <= self._price_derivation_max_depth:
+            depth += 1
+            base_room_type = base_room_type.price_base_room_type_id
+        return depth

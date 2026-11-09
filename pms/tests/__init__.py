@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from . import test_pms_pricelist_occupancy
 from . import test_pms_reservation
 from . import test_pms_pricelist
 from . import test_pms_checkin_partner
@@ -26,6 +27,7 @@ from . import test_pms_sale_channel
 from . import test_pms_folio
 from . import test_pms_availability_plan_rules
 from . import test_pms_room_type
+from . import test_pms_room_type_price_derivation
 from . import test_pms_room_type_class
 from . import test_pms_board_service
 from . import test_pms_wizard_massive_changes
