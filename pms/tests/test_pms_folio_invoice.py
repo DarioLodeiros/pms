@@ -868,27 +868,8 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
         other one.
         """
         # ARRANGE
-        product = self.env["product.product"].create({"name": "Included breakfast"})
-        board = self.env["pms.board.service"].create(
-            {
-                "name": "Included Board",
-                "default_code": "CBI",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "product_id": product.id,
-                "pms_board_service_id": board.id,
-                "amount": 0,
-                "adults": True,
-            }
-        )
-        board_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board.id,
-                "pms_property_id": self.property.id,
-            }
+        board = self._create_board_service(
+            "Included Board", default_code="CBI", list_price=0
         )
         reservation = self.env["pms.reservation"].create(
             {
@@ -898,7 +879,7 @@ class TestPmsFolioInvoice(TestPms, AccountTestInvoicingCommon):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.partner_id.id,
-                "board_service_room_id": board_room_type.id,
+                "board_service_id": board.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )

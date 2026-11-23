@@ -579,7 +579,7 @@ class FolioSaleLine(models.Model):
     @api.depends(
         "reservation_line_ids",
         "reservation_line_ids.room_id",
-        "reservation_id.board_service_room_id",
+        "reservation_id.board_service_id",
         "reservation_id.service_ids.price_total",
         "service_line_ids",
         "service_id",
@@ -866,7 +866,7 @@ class FolioSaleLine(models.Model):
         keeps its own label untouched.
         """
         reservation = reservation_id[:1]
-        board = reservation.board_service_room_id.pms_board_service_id
+        board = reservation.board_service_id
         if not board:
             return ""
         board_services = reservation.service_ids.filtered("is_board_service")

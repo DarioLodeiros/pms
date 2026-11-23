@@ -1277,26 +1277,8 @@ class TestPmsFolioSaleLine(TestPms):
     # BOARD SERVICE INCLUDED IN THE ROOM RATE
     def _create_included_board(self):
         """A board whose services are sold at zero, included in the room rate."""
-        board = self.env["pms.board.service"].create(
-            {
-                "name": "Included Board Test",
-                "default_code": "TIB",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board.id,
-                "product_id": self.product_test1.id,
-                "amount": 0,
-                "adults": True,
-            }
-        )
-        return self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board.id,
-                "pms_property_id": self.pms_property1.id,
-            }
+        return self._create_board_service(
+            "Included Board Test", default_code="TIB", list_price=0
         )
 
     def _accommodation_line(self, reservation):
@@ -1316,7 +1298,7 @@ class TestPmsFolioSaleLine(TestPms):
         the board.
         """
         # ARRANGE
-        board_room_type = self._create_included_board()
+        board = self._create_included_board()
 
         # ACT
         reservation = self.env["pms.reservation"].create(
@@ -1327,7 +1309,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_room_type.id,
+                "board_service_id": board.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -1357,7 +1339,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": self.board_service_room_type.id,
+                "board_service_id": self.board_service_test.id,
                 "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
@@ -1404,7 +1386,7 @@ class TestPmsFolioSaleLine(TestPms):
         change.
         """
         # ARRANGE
-        board_room_type = self._create_included_board()
+        board = self._create_included_board()
         reservation = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -1418,7 +1400,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
         # ACT
-        reservation.board_service_room_id = board_room_type
+        reservation.board_service_id = board
 
         # ASSERT
         self.assertTrue(
