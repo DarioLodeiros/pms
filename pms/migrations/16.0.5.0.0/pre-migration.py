@@ -7,6 +7,12 @@ garbage-collects its ``ir.model.data`` entry, and that happens AFTER the
 post-migration runs. Renaming the three columns here is what lets the
 post-migration read them, and it leaves the data in the database as the
 material to roll back with and to verify against.
+
+The rules are also copied night by night to ``pms_inventory_migration_plan_rule``,
+which is what the post-migration reads. Odoo runs the pre-migrations of every
+version before the post-migration of any, so a database upgraded straight past
+16.0.6.0.0 has its rules collapsed into date ranges, and their ``date`` column
+set aside, by the time this version's post-migration runs.
 """
 import logging
 
@@ -15,6 +21,20 @@ from openupgradelib import openupgrade
 _logger = logging.getLogger(__name__)
 
 _INVENTORY_COLUMNS = ("quota", "max_avail", "plan_avail")
+
+# What the post-migration reads: the rules as they were, one row per night.
+SNAPSHOT_TABLE = "pms_inventory_migration_plan_rule"
+_SNAPSHOT = """
+    CREATE TABLE {table} AS
+    SELECT
+        id,
+        availability_plan_id,
+        pms_property_id,
+        room_type_id,
+        date,
+        {columns}
+    FROM pms_availability_plan_rule
+"""
 
 # A view that still shows the removed fields breaks the validation of the
 # combined arch while any sibling view is written, which aborts the upgrade.
@@ -59,3 +79,24 @@ def migrate(env, version):
             len(disabled),
             disabled,
         )
+    _snapshot_rules(env)
+
+
+def _snapshot_rules(env):
+    cr = env.cr
+    if openupgrade.table_exists(cr, SNAPSHOT_TABLE):
+        return
+    columns = []
+    for column in _INVENTORY_COLUMNS:
+        legacy = openupgrade.get_legacy_name(column)
+        if openupgrade.column_exists(cr, "pms_availability_plan_rule", legacy):
+            columns.append(legacy)
+        else:
+            columns.append(f"NULL::integer AS {legacy}")
+    if openupgrade.column_exists(cr, "pms_availability_plan_rule", "real_avail"):
+        columns.append("real_avail")
+    else:
+        columns.append("NULL::integer AS real_avail")
+    openupgrade.logged_query(
+        cr, _SNAPSHOT.format(table=SNAPSHOT_TABLE, columns=", ".join(columns))
+    )

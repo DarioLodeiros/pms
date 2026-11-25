@@ -48,7 +48,7 @@ _STAGE_NIGHTS = """
         COUNT(DISTINCT {max_avail}) AS max_avail_values,
         COUNT(*) FILTER (WHERE {quota} <> 0) AS quota_open_plans,
         COUNT(*) FILTER (WHERE {max_avail} <> 0) AS max_avail_open_plans
-    FROM pms_availability_plan_rule rule
+    FROM pms_inventory_migration_plan_rule rule
     WHERE rule.date >= %(cutoff)s
       AND rule.pms_property_id IS NOT NULL
       AND rule.room_type_id IS NOT NULL
@@ -356,7 +356,7 @@ _REPORT_UNMIGRATABLE = """
         COUNT(*) FILTER (WHERE rule.date IS NULL) AS without_date,
         COUNT(*) FILTER (WHERE rule.pms_property_id IS NULL) AS without_property,
         COUNT(*) FILTER (WHERE rule.room_type_id IS NULL) AS without_room_type
-    FROM pms_availability_plan_rule rule
+    FROM pms_inventory_migration_plan_rule rule
     WHERE (
         rule.date IS NULL
         OR rule.pms_property_id IS NULL
@@ -420,7 +420,7 @@ _REPORT_MISSING_PLANS = """
             ON reachable.pms_property_id = night.pms_property_id
         WHERE NOT EXISTS (
             SELECT 1
-            FROM pms_availability_plan_rule rule
+            FROM pms_inventory_migration_plan_rule rule
             WHERE rule.pms_property_id = night.pms_property_id
               AND rule.room_type_id = night.room_type_id
               AND rule.date = night.date
@@ -455,7 +455,7 @@ _REPORT_PLAN_AVAIL = """
             MIN(rule.{plan_avail}) AS plan_avail,
             MIN(COALESCE(rule.real_avail, 0)) AS real_avail,
             COUNT(DISTINCT COALESCE(rule.real_avail, 0)) AS real_avail_values
-        FROM pms_availability_plan_rule rule
+        FROM pms_inventory_migration_plan_rule rule
         WHERE rule.date >= %(cutoff)s
           AND rule.pms_property_id IS NOT NULL
           AND rule.room_type_id IS NOT NULL
@@ -532,8 +532,10 @@ def _log_table(header, rows, columns):
 
 @openupgrade.migrate()
 def migrate(env, version):
+    # Read from the copy the pre-migration took, not from the rules
+    # themselves: see the pre-migration.
     if not openupgrade.column_exists(
-        env.cr, "pms_availability_plan_rule", LEGACY_QUOTA
+        env.cr, "pms_inventory_migration_plan_rule", LEGACY_QUOTA
     ):
         _logger.warning(
             "The inventory columns of the availability plan rules are not "
